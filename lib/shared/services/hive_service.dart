@@ -12,6 +12,8 @@ class HiveService {
   HiveService._();
 
   static Future<void> init() async {
+    await Hive.initFlutter();
+
     // Register Adapters
     Hive.registerAdapter(DailyLogAdapter());
     Hive.registerAdapter(HabitEntryAdapter());
@@ -28,7 +30,8 @@ class HiveService {
 
   // --- DailyLog Operations ---
 
-  static Box<DailyLog> get dailyLogBox => Hive.box<DailyLog>(AppConstants.dailyLogsBox);
+  static Box<DailyLog> get dailyLogBox =>
+      Hive.box<DailyLog>(AppConstants.dailyLogsBox);
 
   static DailyLog? getDailyLog(String key) => dailyLogBox.get(key);
 
@@ -38,7 +41,8 @@ class HiveService {
 
   // --- Mock Test Operations ---
 
-  static Box<MockTest> get mockTestBox => Hive.box<MockTest>(AppConstants.mockTestsBox);
+  static Box<MockTest> get mockTestBox =>
+      Hive.box<MockTest>(AppConstants.mockTestsBox);
 
   static List<MockTest> getAllMockTests() => mockTestBox.values.toList();
 
@@ -56,5 +60,11 @@ class HiveService {
 
   static Future<void> saveSetting(String key, dynamic value) async {
     await settingsBox.put(key, value);
+  }
+
+  static Future<void> clearAllData() async {
+    await dailyLogBox.clear();
+    await mockTestBox.clear();
+    await settingsBox.clear();
   }
 }

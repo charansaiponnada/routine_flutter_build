@@ -3,10 +3,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:animate_do/animate_do.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../providers/streak_provider.dart';
 import 'widgets/greeting_header.dart';
 import 'widgets/progress_ring_card.dart';
 import 'widgets/today_stats_row.dart';
 import 'widgets/heatmap_section.dart';
+import 'widgets/habit_checkin_row.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -30,7 +32,15 @@ class DashboardScreen extends ConsumerWidget {
               const SizedBox(height: 24),
               FadeInUp(
                 duration: AppConstants.mediumAnim,
-                child: const ProgressRingCard(percent: 0.75), // Mock percent
+                child: ProgressRingCard(
+                  percent: ref.watch(todayCompletionProgressProvider),
+                ),
+              ),
+              const SizedBox(height: 24),
+              FadeInUp(
+                duration: AppConstants.mediumAnim,
+                delay: const Duration(milliseconds: 50),
+                child: const HabitCheckinRow(),
               ),
               const SizedBox(height: 24),
               FadeInUp(

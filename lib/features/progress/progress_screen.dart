@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:intl/intl.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
+import '../../providers/streak_provider.dart';
 import 'widgets/study_hours_chart.dart';
 import 'widgets/streak_chart.dart';
 import 'widgets/habit_radar_chart.dart';
@@ -52,7 +54,7 @@ class ProgressScreen extends ConsumerWidget {
             FadeInUp(
               duration: AppConstants.slowAnim,
               delay: const Duration(milliseconds: 300),
-              child: _buildMonthlySummaryCard(context),
+              child: _buildMonthlySummaryCard(context, ref),
             ),
             const SizedBox(height: 24),
           ],
@@ -61,7 +63,10 @@ class ProgressScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMonthlySummaryCard(BuildContext context) {
+  Widget _buildMonthlySummaryCard(BuildContext context, WidgetRef ref) {
+    final summary = ref.watch(monthlySummaryProvider);
+    final monthName = DateFormat('MMMM').format(DateTime.now()).toUpperCase();
+
     return AppCard(
       color: AppColors.bgSurface,
       showShadow: false,
@@ -69,16 +74,16 @@ class ProgressScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'MONTHLY OVERVIEW (MAY)',
+            'MONTHLY OVERVIEW ($monthName)',
             style: Theme.of(context).textTheme.labelLarge?.copyWith(letterSpacing: 1.5),
           ),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildSummaryStat(context, 'Study', '142h', AppColors.accentCyan),
-              _buildSummaryStat(context, 'Avg Score', '74%', AppColors.accentGreen),
-              _buildSummaryStat(context, 'Workouts', '22', AppColors.accentAmber),
+              _buildSummaryStat(context, 'Study', summary['study']!, AppColors.accentCyan),
+              _buildSummaryStat(context, 'Avg Score', summary['score']!, AppColors.accentGreen),
+              _buildSummaryStat(context, 'Workouts', summary['workouts']!, AppColors.accentAmber),
             ],
           ),
         ],

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../providers/streak_provider.dart';
 import '../../../shared/widgets/app_card.dart';
 
-class HeatmapSection extends StatelessWidget {
+class HeatmapSection extends ConsumerWidget {
   const HeatmapSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final intensities = ref.watch(last60DaysIntensityProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -27,8 +30,11 @@ class HeatmapSection extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 6),
                   child: Column(
                     children: List.generate(7, (dayIndex) {
-                      // Mock intensity for now
-                      final intensity = Random().nextInt(5);
+                      final index = (weekIndex * 7) + dayIndex;
+                      // Ensure we don't go out of bounds of 60 days
+                      if (index >= 60) return const Padding(padding: EdgeInsets.only(bottom: 6), child: SizedBox(width: 12, height: 12));
+                      
+                      final intensity = intensities[59 - index];
                       return Container(
                         width: 12,
                         height: 12,
@@ -49,8 +55,8 @@ class HeatmapSection extends StatelessWidget {
     );
   }
 
-  Color _getColorForIntensity(int intensity) {
-    if (intensity == 0) return AppColors.bgSurface;
-    return AppColors.accentGreen.withOpacity(0.2 * intensity);
+  Color _getColorForIntensity(double intensity) {
+    if (intensity <= 0.05) return AppColors.bgSurface;
+    return AppColors.accentGreen.withOpacity(intensity.clamp(0.1, 1.0));
   }
 }

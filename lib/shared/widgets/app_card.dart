@@ -9,6 +9,7 @@ class AppCard extends StatefulWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final Color? color;
+  final Color? borderColor;
   final double borderRadius;
   final bool showShadow;
   final VoidCallback? onTap;
@@ -18,6 +19,7 @@ class AppCard extends StatefulWidget {
     required this.child,
     this.padding,
     this.color,
+    this.borderColor,
     this.borderRadius = 12.0,
     this.showShadow = true,
     this.onTap,
@@ -58,7 +60,7 @@ class _AppCardState extends State<AppCard> with SingleTickerProviderStateMixin {
         decoration: BoxDecoration(
           color: widget.color ?? AppColors.bgCard,
           borderRadius: BorderRadius.circular(widget.borderRadius),
-          border: Border.all(color: AppColors.borderColor),
+          border: Border.all(color: widget.borderColor ?? AppColors.borderColor),
           boxShadow: widget.showShadow
               ? [
                   BoxShadow(

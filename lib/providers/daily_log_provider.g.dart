@@ -6,7 +6,7 @@ part of 'daily_log_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$dailyLogNotifierHash() => r'39a85aa9ec8d99ae75174069477e0b20e47c9862';
+String _$dailyLogNotifierHash() => r'e77e3880fbcdf6c5b637c40275c33d37466e1b8e';
 
 /// See also [DailyLogNotifier].
 @ProviderFor(DailyLogNotifier)
