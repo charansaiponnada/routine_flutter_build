@@ -10,6 +10,8 @@ import '../../providers/daily_log_provider.dart';
 import '../../models/routine_block.dart';
 import 'widgets/routine_block_tile.dart';
 
+import '../../providers/settings_provider.dart';
+
 class RoutineScreen extends ConsumerWidget {
   const RoutineScreen({super.key});
 
@@ -17,7 +19,8 @@ class RoutineScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dailyLog = ref.watch(dailyLogNotifierProvider);
     final notifier = ref.read(dailyLogNotifierProvider.notifier);
-    final blocks = RoutineData.defaultBlocks;
+    final settings = ref.watch(settingsNotifierProvider);
+    final blocks = (settings['routineBlocks'] as List<RoutineBlock>?) ?? RoutineData.defaultBlocks;
 
     return Scaffold(
       appBar: AppBar(
@@ -29,36 +32,55 @@ class RoutineScreen extends ConsumerWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppConstants.horizontalPadding,
-          vertical: AppConstants.verticalPadding,
-        ),
-        itemCount: blocks.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final block = blocks[index];
-          final status = dailyLog.routineStatuses.firstWhere(
-            (s) => s.blockId == block.blockId,
-            orElse: () => RoutineBlockStatus(blockId: block.blockId),
-          );
+      body: blocks.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.alarm_off_rounded, size: 64, color: AppColors.textMuted.withAlpha(50)),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No routine blocks defined.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Set up your 4 AM discipline in Settings.',
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 10),
+                  ),
+                ],
+              ),
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppConstants.horizontalPadding,
+                vertical: AppConstants.verticalPadding,
+              ),
+              itemCount: blocks.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final block = blocks[index];
+                final status = dailyLog.routineStatuses.firstWhere(
+                  (s) => s.blockId == block.blockId,
+                  orElse: () => RoutineBlockStatus(blockId: block.blockId),
+                );
 
-          final bool isActive = _isBlockActive(block);
+                final bool isActive = _isBlockActive(block);
 
-          return FadeInUp(
-            duration: AppConstants.fastAnim,
-            delay: Duration(milliseconds: index * 50),
-            child: RoutineBlockTile(
-              block: block,
-              status: status,
-              isActive: isActive,
-              onDone: () => notifier.updateRoutineStatus(block.blockId, 'done'),
-              onSkipped: () => notifier.updateRoutineStatus(block.blockId, 'skipped'),
-              onPartial: () => _showPartialBottomSheet(context, block, notifier),
+                return FadeInUp(
+                  duration: AppConstants.fastAnim,
+                  delay: Duration(milliseconds: index * 50),
+                  child: RoutineBlockTile(
+                    block: block,
+                    status: status,
+                    isActive: isActive,
+                    onDone: () => notifier.updateRoutineStatus(block.blockId, 'done'),
+                    onSkipped: () => notifier.updateRoutineStatus(block.blockId, 'skipped'),
+                    onPartial: () => _showPartialBottomSheet(context, block, notifier),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 

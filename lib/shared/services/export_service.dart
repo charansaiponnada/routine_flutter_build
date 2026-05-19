@@ -23,11 +23,19 @@ class ExportService {
       'subject': t.subject,
     }).toList();
 
+    final routineBlocks = HiveService.getRoutineBlocks().map((b) => {
+      'id': b.blockId,
+      'name': b.name,
+      'start': b.startTime,
+      'end': b.endTime,
+    }).toList();
+
     return {
       'export_date': DateTime.now().toIso8601String(),
       'app_version': '1.0.0',
       'daily_logs': dailyLogs,
       'mock_tests': mockTests,
+      'routine_blocks': routineBlocks,
     };
   }
 

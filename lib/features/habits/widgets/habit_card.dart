@@ -4,6 +4,8 @@ import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../../core/constants/habit_data.dart';
 
+import 'package:flutter/services.dart';
+
 class HabitCard extends StatelessWidget {
   final HabitDefinition definition;
   final dynamic value;
@@ -77,7 +79,10 @@ class HabitCard extends StatelessWidget {
       return Switch.adaptive(
         value: value == true,
         activeColor: AppColors.accentGreen,
-        onChanged: onChanged,
+        onChanged: (val) {
+          HapticFeedback.lightImpact();
+          onChanged(val);
+        },
       );
     } else {
       return Row(
@@ -88,7 +93,10 @@ class HabitCard extends StatelessWidget {
             onTap: () {
               final current = (value ?? 0) as num;
               final step = definition.step ?? 1;
-              if (current >= step) onChanged(current - step);
+              if (current >= step) {
+                HapticFeedback.mediumImpact();
+                onChanged(current - step);
+              }
             },
           ),
           const SizedBox(width: 8),
@@ -97,6 +105,7 @@ class HabitCard extends StatelessWidget {
             onTap: () {
               final current = (value ?? 0) as num;
               final step = definition.step ?? 1;
+              HapticFeedback.mediumImpact();
               onChanged(current + step);
             },
           ),
