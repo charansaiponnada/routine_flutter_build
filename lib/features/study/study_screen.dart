@@ -123,6 +123,7 @@ class StudyScreen extends ConsumerWidget {
 
   void _showLogStudyDialog(BuildContext context, Map<String, dynamic> subject, StudyNotifier notifier) {
     final topicController = TextEditingController();
+    final resourcesController = TextEditingController();
     double duration = 60;
 
     showDialog(
@@ -137,6 +138,13 @@ class StudyScreen extends ConsumerWidget {
               controller: topicController,
               decoration: const InputDecoration(
                 hintText: 'What topic did you cover?',
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: resourcesController,
+              decoration: const InputDecoration(
+                hintText: 'Resources (e.g. MIT OCW, NPTEL)',
               ),
             ),
             const SizedBox(height: 24),
@@ -178,6 +186,7 @@ class StudyScreen extends ConsumerWidget {
                   topicName: topicController.text,
                   durationMinutes: duration.toInt(),
                   date: DateTime.now(),
+                  resourcesUsed: resourcesController.text,
                 ));
                 Navigator.pop(context);
               }
@@ -193,6 +202,7 @@ class StudyScreen extends ConsumerWidget {
     final scoreController = TextEditingController();
     final totalController = TextEditingController(text: '100');
     final subjectController = TextEditingController(text: 'Full Mock');
+    final notesController = TextEditingController();
 
     showDialog(
       context: context,
@@ -226,6 +236,11 @@ class StudyScreen extends ConsumerWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: notesController,
+              decoration: const InputDecoration(hintText: 'Notes (e.g. Mistakes made)'),
+            ),
           ],
         ),
         actions: [
@@ -247,6 +262,7 @@ class StudyScreen extends ConsumerWidget {
                   totalMarks: total,
                   subject: subjectController.text,
                   percentileEstimate: percentile,
+                  notes: notesController.text,
                 ));
                 // We need to trigger a rebuild, for now we just pop
                 // In a full implementation, we'd use a provider for MockTests too

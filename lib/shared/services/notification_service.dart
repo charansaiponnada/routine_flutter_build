@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'hive_service.dart';
+import '../../core/constants/routine_data.dart';
 
 class NotificationService {
   NotificationService._();
@@ -38,63 +40,80 @@ class NotificationService {
 
     // Schedule all standard notifications
     await scheduleDailyRoutineNotifications();
+    await schedulePostureReminders();
+  }
+
+  static Future<void> schedulePostureReminders() async {
+    final enabled = HiveService.getSetting('notificationsEnabled', defaultValue: true);
+    if (!enabled) return;
+
+    final customBlocks = HiveService.getRoutineBlocks();
+    final blocks = customBlocks.isEmpty ? RoutineData.defaultBlocks : customBlocks;
+    
+    int reminderId = 200; // Starting ID for posture reminders
+
+    for (var block in blocks) {
+      if (block.name.toLowerCase().contains('study') || block.name.toLowerCase().contains('deep work')) {
+        // Assume study blocks might be long, check every 2 hours
+        final startParts = block.startTime.split(':');
+        final endParts = block.endTime.split(':');
+        
+        int startHour = int.parse(startParts[0]);
+        int endHour = int.parse(endParts[0]);
+        
+        // If endHour is less than startHour, it wraps to next day (unlikely for study but possible)
+        if (endHour < startHour) endHour += 24;
+
+        for (int h = startHour + 2; h < endHour; h += 2) {
+          await _scheduleNotification(
+            id: reminderId++,
+            title: 'Posture Check 🧘',
+            body: 'Straighten your back. Hydrate. Keep forging.',
+            scheduledDate: _nextInstanceOfTime(h % 24, 0),
+          );
+        }
+      }
+    }
   }
 
   static Future<void> scheduleDailyRoutineNotifications() async {
+    // Check if notifications are enabled in settings
+    final enabled = HiveService.getSetting('notificationsEnabled', defaultValue: true);
+    if (!enabled) {
+      await _notifications.cancelAll();
+      return;
+    }
+
     // Clear existing to avoid duplicates
     await _notifications.cancelAll();
 
-    final List<Map<String, dynamic>> schedule = [
-      {
-        'id': 1,
-        'time': '03:50',
-        'title': 'Rise & Forge',
-        'body': '4 AM. Your future self is already awake.'
-      },
-      {
-        'id': 2,
-        'time': '04:25',
-        'title': 'Deep Work',
-        'body': 'Study Block 1 starts. No phone.'
-      },
-      {
-        'id': 3,
-        'time': '06:25',
-        'title': 'Body Discipline',
-        'body': 'Workout time. No excuses.'
-      },
-      {
-        'id': 4,
-        'time': '17:25',
-        'title': 'Focus Reset',
-        'body': 'Evening study block. Show up.'
-      },
-      {
-        'id': 5,
-        'time': '20:50',
-        'title': 'Wind Down',
-        'body': 'Journal. Reflect. Sleep wins.'
-      },
-      {
-        'id': 6,
-        'time': '21:25',
-        'title': 'Lights Out',
-        'body': 'Tomorrow starts now. Sleep.'
-      },
-    ];
+    final customBlocks = HiveService.getRoutineBlocks();
+    final blocks = customBlocks.isEmpty ? RoutineData.defaultBlocks : customBlocks;
 
-    for (var item in schedule) {
-      final timeParts = (item['time'] as String).split(':');
+    for (int i = 0; i < blocks.length; i++) {
+      final block = blocks[i];
+      final timeParts = block.startTime.split(':');
       final hour = int.parse(timeParts[0]);
       final minute = int.parse(timeParts[1]);
 
+      // Schedule 5 minutes before
+      var scheduleTime = DateTime(2000, 1, 1, hour, minute).subtract(const Duration(minutes: 5));
+
       await _scheduleNotification(
-        id: item['id'] as int,
-        title: item['title'] as String,
-        body: item['body'] as String,
-        scheduledDate: _nextInstanceOfTime(hour, minute),
+        id: i + 1,
+        title: 'Incoming: ${block.name}',
+        body: 'Starts at ${block.startTime}. Prepare yourself.',
+        scheduledDate: _nextInstanceOfTime(scheduleTime.hour, scheduleTime.minute),
       );
     }
+    
+    // Add a sleep/wind-down notification
+    await _scheduleNotification(
+      id: 99,
+      title: 'Wind Down',
+      body: 'Journal. Reflect. Tomorrow is earned tonight.',
+      scheduledDate: _nextInstanceOfTime(21, 00),
+    );
   }
 
   static Future<void> _scheduleNotification({

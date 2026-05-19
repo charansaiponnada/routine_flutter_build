@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../shared/services/hive_service.dart';
 import '../models/study_entry.dart';
+import '../core/constants/gate_subjects.dart';
 
 part 'study_provider.g.dart';
 
@@ -18,14 +19,17 @@ class StudyNotifier extends _$StudyNotifier {
   }
 
   double getSubjectProgress(String subjectId) {
-    // In a real app, this would compare against a total topic list
-    // For MVP, we calculate total minutes logged
-    final totalMinutes = state
-        .where((s) => s.subjectId == subjectId)
-        .fold(0, (prev, element) => prev + element.durationMinutes);
+    final subject = GateSubjects.subjects.firstWhere((s) => s['id'] == subjectId);
+    final totalTopics = (subject['totalTopics'] as num).toDouble();
     
-    // Assume 1000 minutes = 100% for visualization
-    return (totalMinutes / 1000).clamp(0.0, 1.0);
+    // Count unique topics logged for this subject
+    final uniqueTopics = state
+        .where((s) => s.subjectId == subjectId)
+        .map((s) => s.topicName.trim().toLowerCase())
+        .toSet()
+        .length;
+    
+    return (uniqueTopics / totalTopics).clamp(0.0, 1.0);
   }
 
   void addStudySession(StudyEntry session) {

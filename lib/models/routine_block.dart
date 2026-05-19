@@ -23,11 +23,19 @@ class RoutineBlockStatus extends HiveObject {
 }
 
 /// Helper for the UI to represent the static structure of a block.
-/// Not stored in Hive, but used to map status to names/times.
-class RoutineBlock {
+/// Can be customized by the user.
+@HiveType(typeId: 6)
+class RoutineBlock extends HiveObject {
+  @HiveField(0)
   final String blockId;
+
+  @HiveField(1)
   final String name;
+
+  @HiveField(2)
   final String startTime;
+
+  @HiveField(3)
   final String endTime;
 
   RoutineBlock({
@@ -36,4 +44,17 @@ class RoutineBlock {
     required this.startTime,
     required this.endTime,
   });
+
+  RoutineBlock copyWith({
+    String? name,
+    String? startTime,
+    String? endTime,
+  }) {
+    return RoutineBlock(
+      blockId: blockId,
+      name: name ?? this.name,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+    );
+  }
 }

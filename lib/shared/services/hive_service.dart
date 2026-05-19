@@ -20,12 +20,29 @@ class HiveService {
     Hive.registerAdapter(StudyEntryAdapter());
     Hive.registerAdapter(WorkoutEntryAdapter());
     Hive.registerAdapter(RoutineBlockStatusAdapter());
+    Hive.registerAdapter(RoutineBlockAdapter());
     Hive.registerAdapter(MockTestAdapter());
 
     // Open Boxes
     await Hive.openBox<DailyLog>(AppConstants.dailyLogsBox);
     await Hive.openBox<MockTest>(AppConstants.mockTestsBox);
+    await Hive.openBox<RoutineBlock>(AppConstants.routineBlocksBox);
     await Hive.openBox(AppConstants.settingsBox);
+  }
+
+  // --- Routine Block Operations ---
+
+  static Box<RoutineBlock> get routineBlockBox =>
+      Hive.box<RoutineBlock>(AppConstants.routineBlocksBox);
+
+  static List<RoutineBlock> getRoutineBlocks() {
+    if (routineBlockBox.isEmpty) return [];
+    return routineBlockBox.values.toList();
+  }
+
+  static Future<void> saveRoutineBlocks(List<RoutineBlock> blocks) async {
+    await routineBlockBox.clear();
+    await routineBlockBox.addAll(blocks);
   }
 
   // --- DailyLog Operations ---
