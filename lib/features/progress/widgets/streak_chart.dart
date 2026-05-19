@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/app_card.dart';
+import '../../../providers/streak_provider.dart';
 
-class StreakChart extends StatelessWidget {
+class StreakChart extends ConsumerWidget {
   const StreakChart({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final history = ref.watch(streakHistoryProvider);
+    final maxStreak = _calculateMaxStreak(history);
+
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,15 +31,9 @@ class StreakChart extends StatelessWidget {
                 borderData: FlBorderData(show: false),
                 lineBarsData: [
                   LineChartBarData(
-                    spots: const [
-                      FlSpot(0, 2),
-                      FlSpot(5, 7),
-                      FlSpot(10, 5),
-                      FlSpot(15, 12),
-                      FlSpot(20, 15),
-                      FlSpot(25, 22),
-                      FlSpot(30, 28),
-                    ],
+                    spots: history.asMap().entries.map((entry) {
+                      return FlSpot(entry.key.toDouble(), entry.value);
+                    }).toList(),
                     isCurved: true,
                     color: AppColors.accentGreen,
                     barWidth: 3,
@@ -46,11 +45,23 @@ class StreakChart extends StatelessWidget {
                     ),
                   ),
                 ],
+                minX: 0,
+                maxX: 29,
+                minY: 0,
+                maxY: maxStreak,
               ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  double _calculateMaxStreak(List<double> history) {
+    double max = 7.0; // Minimum maxY
+    for (var s in history) {
+      if (s > max) max = s;
+    }
+    return (max + 2).ceilToDouble();
   }
 }

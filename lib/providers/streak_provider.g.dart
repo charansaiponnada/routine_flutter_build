@@ -69,5 +69,35 @@ final monthlySummaryProvider =
 );
 
 typedef MonthlySummaryRef = AutoDisposeProviderRef<Map<String, String>>;
+String _$streakHistoryHash() => r'1403f02b366d4de11995b539befdfa6e3a58d464';
+
+/// See also [streakHistory].
+@ProviderFor(streakHistory)
+final streakHistoryProvider = AutoDisposeProvider<List<double>>.internal(
+  streakHistory,
+  name: r'streakHistoryProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$streakHistoryHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef StreakHistoryRef = AutoDisposeProviderRef<List<double>>;
+String _$habitRadarStatsHash() => r'163d4a17116f333fd53f0fc7ec2cbb3b176a24d1';
+
+/// See also [habitRadarStats].
+@ProviderFor(habitRadarStats)
+final habitRadarStatsProvider = AutoDisposeProvider<List<double>>.internal(
+  habitRadarStats,
+  name: r'habitRadarStatsProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$habitRadarStatsHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef HabitRadarStatsRef = AutoDisposeProviderRef<List<double>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

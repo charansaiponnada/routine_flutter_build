@@ -5,6 +5,7 @@ import 'package:animate_do/animate_do.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/daily_log_provider.dart';
+import '../../providers/fitness_provider.dart';
 import '../../models/workout_entry.dart';
 import 'widgets/weekly_metrics_card.dart';
 import '../../shared/widgets/app_card.dart';
@@ -16,6 +17,8 @@ class FitnessScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dailyLog = ref.watch(dailyLogNotifierProvider);
     final notifier = ref.read(dailyLogNotifierProvider.notifier);
+    final weightHistoryData = ref.watch(weightHistoryProvider);
+    
     final workout = dailyLog.workout ?? WorkoutEntry(
       type: 'Home Workout',
       durationMinutes: 45,
@@ -61,7 +64,7 @@ class FitnessScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             FadeInUp(
               duration: AppConstants.slowAnim,
-              child: _buildWeightChart(),
+              child: _buildWeightChart(weightHistoryData),
             ),
             const SizedBox(height: 32),
             Text(
@@ -151,7 +154,11 @@ class FitnessScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildWeightChart() {
+  Widget _buildWeightChart(List<double> history) {
+    final spots = history.isEmpty 
+        ? [const FlSpot(0, 0)] 
+        : history.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value)).toList();
+
     return AppCard(
       padding: const EdgeInsets.fromLTRB(8, 24, 24, 8),
       child: SizedBox(
@@ -170,16 +177,7 @@ class FitnessScreen extends ConsumerWidget {
             borderData: FlBorderData(show: false),
             lineBarsData: [
               LineChartBarData(
-                spots: [
-                  const FlSpot(0, 82),
-                  const FlSpot(1, 81.5),
-                  const FlSpot(2, 81.2),
-                  const FlSpot(3, 80.8),
-                  const FlSpot(4, 80.5),
-                  const FlSpot(5, 80.1),
-                  const FlSpot(6, 79.8),
-                  const FlSpot(7, 79.5),
-                ],
+                spots: spots,
                 isCurved: true,
                 color: AppColors.accentGreen,
                 barWidth: 3,

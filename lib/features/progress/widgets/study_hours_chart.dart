@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/app_card.dart';
+import '../../../providers/study_provider.dart';
 
-class StudyHoursChart extends StatelessWidget {
+class StudyHoursChart extends ConsumerWidget {
   const StudyHoursChart({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final studySessions = ref.watch(studyNotifierProvider);
+    final weeklyData = _calculateWeeklyData(studySessions);
+    final maxHours = _calculateMaxHours(weeklyData);
+
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -22,8 +28,23 @@ class StudyHoursChart extends StatelessWidget {
             child: BarChart(
               BarChartData(
                 alignment: BarChartAlignment.spaceAround,
-                maxY: 8,
-                barTouchData: BarTouchData(enabled: false),
+                maxY: maxHours,
+                barTouchData: BarTouchData(
+                  enabled: true,
+                  touchTooltipData: BarTouchTooltipData(
+                    getTooltipColor: (_) => AppColors.bgElevated,
+                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                      return BarTooltipItem(
+                        '${rod.toY.toStringAsFixed(1)} hrs',
+                        const TextStyle(
+                          color: AppColors.accentCyan,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      );
+                    },
+                  ),
+                ),
                 titlesData: FlTitlesData(
                   show: true,
                   bottomTitles: AxisTitles(
@@ -47,15 +68,9 @@ class StudyHoursChart extends StatelessWidget {
                 ),
                 gridData: const FlGridData(show: false),
                 borderData: FlBorderData(show: false),
-                barGroups: [
-                  _makeGroupData(0, 4.5),
-                  _makeGroupData(1, 6.0),
-                  _makeGroupData(2, 5.0),
-                  _makeGroupData(3, 7.5),
-                  _makeGroupData(4, 4.0),
-                  _makeGroupData(5, 2.0),
-                  _makeGroupData(6, 3.5),
-                ],
+                barGroups: weeklyData.asMap().entries.map((entry) {
+                  return _makeGroupData(entry.key, entry.value, maxHours);
+                }).toList(),
               ),
             ),
           ),
@@ -64,7 +79,35 @@ class StudyHoursChart extends StatelessWidget {
     );
   }
 
-  BarChartGroupData _makeGroupData(int x, double y) {
+  List<double> _calculateWeeklyData(dynamic sessions) {
+    final now = DateTime.now();
+    // Start from Monday of this week
+    final monday = now.subtract(Duration(days: now.weekday - 1));
+    final weekDays = List.generate(7, (i) => DateTime(monday.year, monday.month, monday.day).add(Duration(days: i)));
+    
+    final dailyHours = List.generate(7, (i) => 0.0);
+    
+    for (final session in sessions) {
+      final sessionDate = DateTime(session.date.year, session.date.month, session.date.day);
+      for (int i = 0; i < 7; i++) {
+        if (sessionDate.isAtSameMomentAs(weekDays[i])) {
+          dailyHours[i] += session.durationMinutes / 60.0;
+        }
+      }
+    }
+    
+    return dailyHours;
+  }
+
+  double _calculateMaxHours(List<double> data) {
+    double max = 4.0; // Minimum maxY
+    for (var h in data) {
+      if (h > max) max = h;
+    }
+    return (max + 1).ceilToDouble();
+  }
+
+  BarChartGroupData _makeGroupData(int x, double y, double maxY) {
     return BarChartGroupData(
       x: x,
       barRods: [
@@ -75,7 +118,7 @@ class StudyHoursChart extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
           backDrawRodData: BackgroundBarChartRodData(
             show: true,
-            toY: 8,
+            toY: maxY,
             color: AppColors.bgSurface,
           ),
         ),

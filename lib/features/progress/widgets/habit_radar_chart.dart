@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/app_card.dart';
+import '../../../providers/streak_provider.dart';
 
-class HabitRadarChart extends StatelessWidget {
+class HabitRadarChart extends ConsumerWidget {
   const HabitRadarChart({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stats = ref.watch(habitRadarStatsProvider);
+
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,13 +31,7 @@ class HabitRadarChart extends StatelessWidget {
                     fillColor: AppColors.accentGreen.withAlpha(40),
                     borderColor: AppColors.accentGreen,
                     entryRadius: 3,
-                    dataEntries: const [
-                      RadarEntry(value: 5),
-                      RadarEntry(value: 4),
-                      RadarEntry(value: 3),
-                      RadarEntry(value: 5),
-                      RadarEntry(value: 4),
-                    ],
+                    dataEntries: stats.map((v) => RadarEntry(value: v)).toList(),
                   ),
                 ],
                 radarBackgroundColor: Colors.transparent,

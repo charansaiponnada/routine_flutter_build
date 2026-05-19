@@ -6,6 +6,8 @@ import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../providers/daily_log_provider.dart';
+import '../../shared/services/hive_service.dart';
+import '../../models/daily_log.dart';
 import '../../shared/widgets/app_card.dart';
 
 class JournalScreen extends ConsumerWidget {
@@ -15,6 +17,13 @@ class JournalScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dailyLog = ref.watch(dailyLogNotifierProvider);
     final notifier = ref.read(dailyLogNotifierProvider.notifier);
+    
+    // Fetch all logs that have any notes
+    final historyLogs = HiveService.dailyLogBox.values
+        .where((l) => (l.morningNote != null && l.morningNote!.isNotEmpty) || 
+                      (l.eveningNote != null && l.eveningNote!.isNotEmpty))
+        .toList();
+    historyLogs.sort((a, b) => b.date.compareTo(a.date));
 
     return Scaffold(
       appBar: AppBar(
@@ -64,9 +73,99 @@ class JournalScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _buildJournalHistory(context),
+            if (historyLogs.isEmpty)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 40),
+                  child: Text(
+                    'No past reflections yet.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
+                  ),
+                ),
+              )
+            else
+              ...historyLogs.asMap().entries.map((entry) => _buildHistoryItem(context, entry.value, entry.key)),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildHistoryItem(BuildContext context, DailyLog log, int index) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: FadeInLeft(
+        duration: AppConstants.fastAnim,
+        delay: Duration(milliseconds: index * 50),
+        child: AppCard(
+          color: AppColors.bgSurface,
+          showShadow: false,
+          onTap: () => _showLogDetail(context, log),
+          child: Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    DateFormat('MMM d, yyyy').format(log.date),
+                    style: AppTheme.jetBrainsMono(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    child: Text(
+                      log.morningNote ?? log.eveningNote ?? '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showLogDetail(BuildContext context, DailyLog log) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.bgSurface,
+        title: Text(DateFormat('EEEE, MMM d').format(log.date)),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (log.morningNote != null && log.morningNote!.isNotEmpty) ...[
+                const Text('MORNING REFLECTION', style: TextStyle(color: AppColors.accentGreen, fontWeight: FontWeight.bold, fontSize: 10)),
+                const SizedBox(height: 4),
+                Text(log.morningNote!),
+                const SizedBox(height: 16),
+              ],
+              if (log.eveningNote != null && log.eveningNote!.isNotEmpty) ...[
+                const Text('NIGHT REVIEW', style: TextStyle(color: AppColors.accentCyan, fontWeight: FontWeight.bold, fontSize: 10)),
+                const SizedBox(height: 4),
+                Text(log.eveningNote!),
+              ],
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('CLOSE'),
+          ),
+        ],
       ),
     );
   }
@@ -117,57 +216,13 @@ class JournalScreen extends ConsumerWidget {
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   fillColor: Colors.transparent,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                 ),
               ),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildJournalHistory(BuildContext context) {
-    // For now, we'll just show a placeholder list. 
-    // In a full implementation, we'd fetch past logs from Hive.
-    return Column(
-      children: List.generate(3, (index) {
-        final date = DateTime.now().subtract(Duration(days: index + 1));
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: FadeInLeft(
-            duration: AppConstants.fastAnim,
-            delay: Duration(milliseconds: index * 100),
-            child: AppCard(
-              color: AppColors.bgSurface,
-              showShadow: false,
-              child: Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        DateFormat('MMM d, yyyy').format(date),
-                        style: AppTheme.jetBrainsMono(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Reflections recorded...',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
-                ],
-              ),
-            ),
-          ),
-        );
-      }),
     );
   }
 }
