@@ -36,7 +36,7 @@ class StatChip extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label.toUpperCase(),
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 8),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 10),
           ),
         ],
       ),

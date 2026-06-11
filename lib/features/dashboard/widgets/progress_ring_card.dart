@@ -36,7 +36,7 @@ class ProgressRingCard extends StatelessWidget {
                   'COMPLETE',
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     letterSpacing: 2,
-                    fontSize: 10,
+                    fontSize: 12,
                   ),
                 ),
               ],

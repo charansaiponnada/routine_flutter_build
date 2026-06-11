@@ -6,8 +6,7 @@ import 'dashboard/dashboard_screen.dart';
 import 'habits/habits_screen.dart';
 import 'routine/routine_screen.dart';
 import 'study/study_screen.dart';
-import 'progress/progress_screen.dart';
-import 'journal/journal_screen.dart';
+import 'progress/insights_screen.dart';
 
 class MainShell extends ConsumerStatefulWidget {
   const MainShell({super.key});
@@ -24,8 +23,7 @@ class _MainShellState extends ConsumerState<MainShell> {
     const HabitsScreen(),
     const RoutineScreen(),
     const StudyScreen(),
-    const ProgressScreen(),
-    const JournalScreen(),
+    const InsightsScreen(),
   ];
 
   @override
@@ -72,8 +70,7 @@ class _MainShellState extends ConsumerState<MainShell> {
                   _navItem(1, Icons.check_circle_rounded, 'Habits'),
                   _navItem(2, Icons.alarm_rounded, 'Routine'),
                   _navItem(3, Icons.book_rounded, 'Study'),
-                  _navItem(4, Icons.bar_chart_rounded, 'Progress'),
-                  _navItem(5, Icons.edit_note_rounded, 'Journal'),
+                  _navItem(4, Icons.auto_graph_rounded, 'Insights'),
                 ],
               ),
             ),

@@ -49,30 +49,28 @@ class HabitCheckinRow extends ConsumerWidget {
 
               return Padding(
                 padding: const EdgeInsets.only(right: 12),
-                child: GestureDetector(
+                child: AppCard(
                   onTap: () => notifier.updateHabit(habit.id, !isDone),
-                  child: AppCard(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    color: isDone ? AppColors.accentGreen.withOpacity(0.1) : AppColors.bgCard,
-                    borderColor: isDone ? AppColors.accentGreen.withOpacity(0.3) : AppColors.borderColor,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          habit.icon,
-                          color: isDone ? AppColors.accentGreen : AppColors.textSecondary,
-                          size: 24,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          habit.name.split(' ').first, // Just the first word for brevity
-                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                                color: isDone ? AppColors.accentGreen : AppColors.textSecondary,
-                                fontSize: 10,
-                              ),
-                        ),
-                      ],
-                    ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  color: isDone ? AppColors.accentGreen.withOpacity(0.1) : AppColors.bgCard,
+                  borderColor: isDone ? AppColors.accentGreen.withOpacity(0.3) : AppColors.borderColor,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        habit.icon,
+                        color: isDone ? AppColors.accentGreen : AppColors.textSecondary,
+                        size: 24,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        habit.name.split(' ').first, // Just the first word for brevity
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: isDone ? AppColors.accentGreen : AppColors.textSecondary,
+                              fontSize: 12,
+                            ),
+                      ),
+                    ],
                   ),
                 ),
               );

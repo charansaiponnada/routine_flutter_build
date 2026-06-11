@@ -28,40 +28,40 @@ class AppTheme {
       // Typography
       textTheme: TextTheme(
         displayLarge: GoogleFonts.outfit(
-          fontSize: 32,
+          fontSize: 34,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
         ),
         displayMedium: GoogleFonts.outfit(
-          fontSize: 28,
+          fontSize: 30,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
         ),
         displaySmall: GoogleFonts.outfit(
-          fontSize: 24,
+          fontSize: 26,
           fontWeight: FontWeight.bold,
           color: AppColors.textPrimary,
         ),
         headlineMedium: GoogleFonts.outfit(
-          fontSize: 20,
+          fontSize: 22,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
         titleLarge: GoogleFonts.outfit(
-          fontSize: 18,
+          fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
         bodyLarge: GoogleFonts.outfit(
-          fontSize: 16,
+          fontSize: 17,
           color: AppColors.textPrimary,
         ),
         bodyMedium: GoogleFonts.outfit(
-          fontSize: 14,
+          fontSize: 15,
           color: AppColors.textSecondary,
         ),
         labelLarge: GoogleFonts.outfit(
-          fontSize: 12,
+          fontSize: 13,
           fontWeight: FontWeight.w500,
           color: AppColors.textMuted,
         ),

@@ -22,12 +22,12 @@ void main() async {
   // Initialize Hive via Service
   await HiveService.init();
 
-  // Handle one-time reset for a "new start"
+  // Force reset for a "fresh start" as requested by user
   final prefs = await SharedPreferences.getInstance();
-  final isFirstStart = prefs.getBool('is_first_start_v2') ?? true;
-  if (isFirstStart) {
+  final hasBeenResetForFreshStart = prefs.getBool('fresh_start_applied_v3') ?? false;
+  if (!hasBeenResetForFreshStart) {
     await HiveService.clearAllData();
-    await prefs.setBool('is_first_start_v2', false);
+    await prefs.setBool('fresh_start_applied_v3', true);
   }
   
   // Initialize Notifications

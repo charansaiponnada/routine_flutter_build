@@ -10,8 +10,8 @@ import '../../shared/services/hive_service.dart';
 import '../../models/daily_log.dart';
 import '../../shared/widgets/app_card.dart';
 
-class JournalScreen extends ConsumerWidget {
-  const JournalScreen({super.key});
+class JournalView extends ConsumerWidget {
+  const JournalView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,68 +25,57 @@ class JournalScreen extends ConsumerWidget {
         .toList();
     historyLogs.sort((a, b) => b.date.compareTo(a.date));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'DAILY JOURNAL',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(letterSpacing: 2),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppConstants.horizontalPadding,
+        vertical: AppConstants.verticalPadding,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppConstants.horizontalPadding,
-          vertical: AppConstants.verticalPadding,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            FadeInDown(
-              duration: AppConstants.fastAnim,
-              child: _buildJournalInput(
-                context,
-                title: 'MORNING REFLECTION',
-                prompt: 'What would make today a win?',
-                value: dailyLog.morningNote ?? '',
-                onChanged: (val) => notifier.updateNotes(morning: val),
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FadeInDown(
+            duration: AppConstants.fastAnim,
+            child: _buildJournalInput(
+              context,
+              title: 'MORNING REFLECTION',
+              prompt: 'What would make today a win?',
+              value: dailyLog.morningNote ?? '',
+              onChanged: (val) => notifier.updateNotes(morning: val),
             ),
-            const SizedBox(height: 24),
-            FadeInUp(
-              duration: AppConstants.mediumAnim,
-              child: _buildJournalInput(
-                context,
-                title: 'NIGHT REVIEW',
-                prompt: 'Did you earn sleep?',
-                value: dailyLog.eveningNote ?? '',
-                onChanged: (val) => notifier.updateNotes(evening: val),
-              ),
+          ),
+          const SizedBox(height: 24),
+          FadeInUp(
+            duration: AppConstants.mediumAnim,
+            child: _buildJournalInput(
+              context,
+              title: 'NIGHT REVIEW',
+              prompt: 'Did you earn sleep?',
+              value: dailyLog.eveningNote ?? '',
+              onChanged: (val) => notifier.updateNotes(evening: val),
             ),
-            const SizedBox(height: 32),
-            FadeInUp(
-              duration: AppConstants.mediumAnim,
-              child: Text(
-                'HISTORY',
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(letterSpacing: 1.5),
-              ),
+          ),
+          const SizedBox(height: 32),
+          FadeInUp(
+            duration: AppConstants.mediumAnim,
+            child: Text(
+              'HISTORY',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(letterSpacing: 1.5, fontSize: 12),
             ),
-            const SizedBox(height: 16),
-            if (historyLogs.isEmpty)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 40),
-                  child: Text(
-                    'No past reflections yet.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
-                  ),
+          ),
+          const SizedBox(height: 16),
+          if (historyLogs.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 40),
+                child: Text(
+                  'No past reflections yet.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textMuted),
                 ),
-              )
-            else
-              ...historyLogs.asMap().entries.map((entry) => _buildHistoryItem(context, entry.value, entry.key)),
-          ],
-        ),
+              ),
+            )
+          else
+            ...historyLogs.asMap().entries.map((entry) => _buildHistoryItem(context, entry.value, entry.key)),
+        ],
       ),
     );
   }
@@ -182,7 +171,7 @@ class JournalScreen extends ConsumerWidget {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(letterSpacing: 1.5),
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(letterSpacing: 1.5, fontSize: 12),
         ),
         const SizedBox(height: 12),
         AppCard(
