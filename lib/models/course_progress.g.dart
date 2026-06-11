@@ -1,47 +1,38 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'mock_test.dart';
+part of 'course_progress.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class MockTestAdapter extends TypeAdapter<MockTest> {
+class CourseProgressAdapter extends TypeAdapter<CourseProgress> {
   @override
-  final int typeId = 5;
+  final int typeId = 7;
 
   @override
-  MockTest read(BinaryReader reader) {
+  CourseProgress read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return MockTest(
-      date: fields[0] as DateTime,
-      score: fields[1] as double,
-      totalMarks: fields[2] as double,
-      subject: fields[3] as String,
-      percentileEstimate: fields[4] as double?,
-      notes: fields[5] as String?,
+    return CourseProgress(
+      courseId: fields[0] as String,
+      completedModuleIds: (fields[1] as List).cast<String>(),
+      lastUpdated: fields[2] as DateTime?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, MockTest obj) {
+  void write(BinaryWriter writer, CourseProgress obj) {
     writer
-      ..writeByte(6)
-      ..writeByte(0)
-      ..write(obj.date)
-      ..writeByte(1)
-      ..write(obj.score)
-      ..writeByte(2)
-      ..write(obj.totalMarks)
       ..writeByte(3)
-      ..write(obj.subject)
-      ..writeByte(4)
-      ..write(obj.percentileEstimate)
-      ..writeByte(5)
-      ..write(obj.notes);
+      ..writeByte(0)
+      ..write(obj.courseId)
+      ..writeByte(1)
+      ..write(obj.completedModuleIds)
+      ..writeByte(2)
+      ..write(obj.lastUpdated);
   }
 
   @override
@@ -50,7 +41,7 @@ class MockTestAdapter extends TypeAdapter<MockTest> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is MockTestAdapter &&
+      other is CourseProgressAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

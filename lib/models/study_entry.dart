@@ -2,12 +2,10 @@ import 'package:hive/hive.dart';
 
 part 'study_entry.g.dart';
 
-/// A study session log for a specific GATE subject.
-/// Embedded within DailyLog.
 @HiveType(typeId: 2)
 class StudyEntry extends HiveObject {
   @HiveField(0)
-  final String subjectId;
+  final String courseId;
 
   @HiveField(1)
   final String topicName;
@@ -21,11 +19,15 @@ class StudyEntry extends HiveObject {
   @HiveField(4)
   final String? resourcesUsed;
 
+  @HiveField(5)
+  final String? moduleId;
+
   StudyEntry({
-    required this.subjectId,
+    required this.courseId,
     required this.topicName,
     required this.durationMinutes,
     required this.date,
     this.resourcesUsed,
+    this.moduleId,
   });
 }

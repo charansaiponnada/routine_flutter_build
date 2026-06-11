@@ -6,10 +6,13 @@ import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../providers/streak_provider.dart';
+import '../../providers/curriculum_provider.dart';
+import '../../core/constants/curriculum.dart';
 import 'widgets/study_hours_chart.dart';
 import 'widgets/streak_chart.dart';
 import 'widgets/habit_radar_chart.dart';
 import '../../shared/widgets/app_card.dart';
+import 'widgets/curriculum_radar_chart.dart';
 
 import 'journal_view.dart';
 
@@ -26,7 +29,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> with SingleTick
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -55,6 +58,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> with SingleTick
           labelStyle: AppTheme.jetBrainsMono(fontSize: 12, fontWeight: FontWeight.bold),
           tabs: const [
             Tab(text: 'ANALYTICS'),
+            Tab(text: 'CURRICULUM'),
             Tab(text: 'JOURNAL'),
           ],
         ),
@@ -63,6 +67,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> with SingleTick
         controller: _tabController,
         children: [
           _buildAnalyticsView(context, ref),
+          _buildCurriculumView(context, ref),
           const JournalView(),
         ],
       ),
@@ -101,6 +106,61 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> with SingleTick
             child: _buildMonthlySummaryCard(context, ref),
           ),
           const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCurriculumView(BuildContext context, WidgetRef ref) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppConstants.horizontalPadding,
+        vertical: AppConstants.verticalPadding,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FadeInUp(
+            duration: AppConstants.fastAnim,
+            child: const CurriculumRadarChart(),
+          ),
+          const SizedBox(height: 24),
+          FadeInUp(
+            duration: AppConstants.mediumAnim,
+            delay: const Duration(milliseconds: 100),
+            child: _buildCurriculumSummaryCard(context, ref),
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCurriculumSummaryCard(BuildContext context, WidgetRef ref) {
+    final notifier = ref.read(curriculumNotifierProvider.notifier);
+    final totalCompleted = Curriculum.courses.fold<int>(0, (s, c) => s + notifier.completedCount(c.id));
+    final totalModules = Curriculum.courses.fold<int>(0, (s, c) => s + c.totalModules);
+    final overall = ref.watch(overallCurriculumProgressProvider);
+
+    return AppCard(
+      color: AppColors.bgSurface,
+      showShadow: false,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'OVERALL PROGRESS',
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(letterSpacing: 1.5, fontSize: 12),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildSummaryStat(context, 'Modules', '$totalCompleted/$totalModules', AppColors.accentCyan),
+              _buildSummaryStat(context, 'Complete', '${(overall * 100).toInt()}%', AppColors.accentGreen),
+              _buildSummaryStat(context, 'Courses', '${Curriculum.courses.length}', AppColors.accentAmber),
+            ],
+          ),
         ],
       ),
     );

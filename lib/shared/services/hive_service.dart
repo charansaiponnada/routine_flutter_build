@@ -4,33 +4,28 @@ import '../../models/habit_entry.dart';
 import '../../models/study_entry.dart';
 import '../../models/workout_entry.dart';
 import '../../models/routine_block.dart';
-import '../../models/mock_test.dart';
+import '../../models/course_progress.dart';
 import '../../core/constants/app_constants.dart';
 
-/// HiveService manages initialization and CRUD operations for Hive boxes.
 class HiveService {
   HiveService._();
 
   static Future<void> init() async {
     await Hive.initFlutter();
 
-    // Register Adapters
     Hive.registerAdapter(DailyLogAdapter());
     Hive.registerAdapter(HabitEntryAdapter());
     Hive.registerAdapter(StudyEntryAdapter());
     Hive.registerAdapter(WorkoutEntryAdapter());
     Hive.registerAdapter(RoutineBlockStatusAdapter());
     Hive.registerAdapter(RoutineBlockAdapter());
-    Hive.registerAdapter(MockTestAdapter());
+    Hive.registerAdapter(CourseProgressAdapter());
 
-    // Open Boxes
     await Hive.openBox<DailyLog>(AppConstants.dailyLogsBox);
-    await Hive.openBox<MockTest>(AppConstants.mockTestsBox);
     await Hive.openBox<RoutineBlock>(AppConstants.routineBlocksBox);
+    await Hive.openBox<CourseProgress>(AppConstants.courseProgressBox);
     await Hive.openBox(AppConstants.settingsBox);
   }
-
-  // --- Routine Block Operations ---
 
   static Box<RoutineBlock> get routineBlockBox =>
       Hive.box<RoutineBlock>(AppConstants.routineBlocksBox);
@@ -45,8 +40,6 @@ class HiveService {
     await routineBlockBox.addAll(blocks);
   }
 
-  // --- DailyLog Operations ---
-
   static Box<DailyLog> get dailyLogBox =>
       Hive.box<DailyLog>(AppConstants.dailyLogsBox);
 
@@ -55,19 +48,6 @@ class HiveService {
   static Future<void> saveDailyLog(DailyLog log) async {
     await dailyLogBox.put(log.keyId, log);
   }
-
-  // --- Mock Test Operations ---
-
-  static Box<MockTest> get mockTestBox =>
-      Hive.box<MockTest>(AppConstants.mockTestsBox);
-
-  static List<MockTest> getAllMockTests() => mockTestBox.values.toList();
-
-  static Future<void> addMockTest(MockTest test) async {
-    await mockTestBox.add(test);
-  }
-
-  // --- Settings Operations ---
 
   static Box get settingsBox => Hive.box(AppConstants.settingsBox);
 
@@ -81,7 +61,6 @@ class HiveService {
 
   static Future<void> clearAllData() async {
     await dailyLogBox.clear();
-    await mockTestBox.clear();
     await settingsBox.clear();
   }
 }

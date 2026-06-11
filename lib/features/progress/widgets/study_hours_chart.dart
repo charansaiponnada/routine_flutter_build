@@ -3,14 +3,16 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/app_card.dart';
-import '../../../providers/study_provider.dart';
+import '../../../shared/services/hive_service.dart';
 
 class StudyHoursChart extends ConsumerWidget {
   const StudyHoursChart({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final studySessions = ref.watch(studyNotifierProvider);
+    final studySessions = HiveService.dailyLogBox.values
+        .expand((log) => log.studySessions)
+        .toList();
     final weeklyData = _calculateWeeklyData(studySessions);
     final maxHours = _calculateMaxHours(weeklyData);
 

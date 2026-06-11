@@ -17,20 +17,21 @@ class StudyEntryAdapter extends TypeAdapter<StudyEntry> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return StudyEntry(
-      subjectId: fields[0] as String,
+      courseId: fields[0] as String,
       topicName: fields[1] as String,
       durationMinutes: fields[2] as int,
       date: fields[3] as DateTime,
       resourcesUsed: fields[4] as String?,
+      moduleId: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, StudyEntry obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
-      ..write(obj.subjectId)
+      ..write(obj.courseId)
       ..writeByte(1)
       ..write(obj.topicName)
       ..writeByte(2)
@@ -38,7 +39,9 @@ class StudyEntryAdapter extends TypeAdapter<StudyEntry> {
       ..writeByte(3)
       ..write(obj.date)
       ..writeByte(4)
-      ..write(obj.resourcesUsed);
+      ..write(obj.resourcesUsed)
+      ..writeByte(5)
+      ..write(obj.moduleId);
   }
 
   @override

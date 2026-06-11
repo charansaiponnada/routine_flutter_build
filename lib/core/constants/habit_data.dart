@@ -51,7 +51,7 @@ class HabitData {
     ),
     HabitDefinition(
       id: 'gate_hours',
-      name: 'GATE study hours',
+      name: 'Study hours',
       icon: Icons.menu_book_rounded,
       type: HabitType.duration,
       unit: 'hrs',

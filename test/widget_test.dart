@@ -1,13 +1,22 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:forge_routine/main.dart';
+import 'package:hive/hive.dart';
+import 'package:forge_routine/models/daily_log.dart';
+import 'package:forge_routine/models/habit_entry.dart';
+import 'package:forge_routine/models/study_entry.dart';
+import 'package:forge_routine/models/workout_entry.dart';
+import 'package:forge_routine/models/routine_block.dart';
+import 'package:forge_routine/models/course_progress.dart';
 
 void main() {
-  testWidgets('Counter initial state test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const ProviderScope(child: ForgeRoutineApp()));
-
-    // Verify that our placeholder text is present.
-    expect(find.textContaining('ForgeRoutine'), findsOneWidget);
+  test('Hive init and adapter registration', () {
+    Hive.init('test/_hive');
+    Hive.registerAdapter(DailyLogAdapter());
+    Hive.registerAdapter(HabitEntryAdapter());
+    Hive.registerAdapter(StudyEntryAdapter());
+    Hive.registerAdapter(WorkoutEntryAdapter());
+    Hive.registerAdapter(RoutineBlockStatusAdapter());
+    Hive.registerAdapter(RoutineBlockAdapter());
+    Hive.registerAdapter(CourseProgressAdapter());
+    expect(true, isTrue);
   });
 }

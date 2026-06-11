@@ -13,7 +13,7 @@ class RoutineData {
     ),
     RoutineBlock(
       blockId: 'study_1',
-      name: 'Deep Study Block 1 (GATE)',
+      name: 'Deep Study Block 1',
       startTime: '04:30',
       endTime: '06:30',
     ),

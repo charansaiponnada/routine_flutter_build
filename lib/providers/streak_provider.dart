@@ -2,7 +2,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../shared/services/hive_service.dart';
 import '../models/daily_log.dart';
 import '../models/habit_entry.dart';
+import '../core/constants/curriculum.dart';
 import 'daily_log_provider.dart';
+import 'curriculum_provider.dart';
 
 part 'streak_provider.g.dart';
 
@@ -101,17 +103,13 @@ Map<String, String> monthlySummary(MonthlySummaryRef ref) {
     return sum + l.studySessions.fold<int>(0, (sSum, s) => sSum + s.durationMinutes);
   });
   
-  final mockTests = HiveService.getAllMockTests();
-  final currentMonthMocks = mockTests.where((m) => m.date.month == now.month && m.date.year == now.year).toList();
-  final avgScore = currentMonthMocks.isEmpty 
-      ? 0.0 
-      : currentMonthMocks.fold<double>(0, (sum, m) => sum + (m.score / m.totalMarks)) / currentMonthMocks.length;
-      
   final totalWorkouts = currentMonthLogs.where((l) => l.workout?.isCompleted == true).length;
+  final notifier = ref.read(curriculumNotifierProvider.notifier);
+  final totalCompleted = Curriculum.courses.fold<int>(0, (s, c) => s + notifier.completedCount(c.id));
   
   return {
     'study': '${(totalStudyMinutes / 60).toStringAsFixed(0)}h',
-    'score': '${(avgScore * 100).toStringAsFixed(0)}%',
+    'score': '${totalCompleted} mod',
     'workouts': '$totalWorkouts',
   };
   }

@@ -5,7 +5,7 @@ import '../core/theme/app_colors.dart';
 import 'dashboard/dashboard_screen.dart';
 import 'habits/habits_screen.dart';
 import 'routine/routine_screen.dart';
-import 'study/study_screen.dart';
+import 'curriculum/curriculum_screen.dart';
 import 'progress/insights_screen.dart';
 
 class MainShell extends ConsumerStatefulWidget {
@@ -22,7 +22,7 @@ class _MainShellState extends ConsumerState<MainShell> {
     const DashboardScreen(),
     const HabitsScreen(),
     const RoutineScreen(),
-    const StudyScreen(),
+    const CurriculumScreen(),
     const InsightsScreen(),
   ];
 
@@ -69,7 +69,7 @@ class _MainShellState extends ConsumerState<MainShell> {
                   _navItem(0, Icons.dashboard_rounded, 'Home'),
                   _navItem(1, Icons.check_circle_rounded, 'Habits'),
                   _navItem(2, Icons.alarm_rounded, 'Routine'),
-                  _navItem(3, Icons.book_rounded, 'Study'),
+                  _navItem(3, Icons.auto_stories_rounded, 'Curriculum'),
                   _navItem(4, Icons.auto_graph_rounded, 'Insights'),
                 ],
               ),

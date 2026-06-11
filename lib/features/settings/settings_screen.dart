@@ -268,7 +268,6 @@ class SettingsScreen extends ConsumerWidget {
                 setState(() => taps++);
                 if (taps >= 3) {
                   HiveService.dailyLogBox.clear();
-                  HiveService.mockTestBox.clear();
                   Navigator.pop(context);
                 }
               },

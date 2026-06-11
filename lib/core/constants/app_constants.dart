@@ -12,8 +12,8 @@ class AppConstants {
   static const String studyEntriesBox = 'study_entries';
   static const String workoutEntriesBox = 'workout_entries';
   static const String routineBlocksBox = 'routine_blocks';
-  static const String mockTestsBox = 'mock_tests';
   static const String settingsBox = 'settings';
+  static const String courseProgressBox = 'course_progress';
 
   // Animation Durations
   static const Duration fastAnim = Duration(milliseconds: 200);

@@ -53,7 +53,7 @@ final last60DaysIntensityProvider = AutoDisposeProvider<List<double>>.internal(
 );
 
 typedef Last60DaysIntensityRef = AutoDisposeProviderRef<List<double>>;
-String _$monthlySummaryHash() => r'e9c51e2f880395c3e8e06f49fffca014817873ad';
+String _$monthlySummaryHash() => r'cc8ca46838cb60b2ac6504ab1ab591771c833074';
 
 /// See also [monthlySummary].
 @ProviderFor(monthlySummary)
